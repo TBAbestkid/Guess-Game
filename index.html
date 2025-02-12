@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Guess Game</title>
+        <link rel="icon" type="image/x-icon" href="https://images.emojiterra.com/google/android-11/512px/1f3b4.png">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <style>
+        body{
+            background-color: black;
+            color: white;
+        }
+        .number-card {
+            width: 80px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .number-card:hover {
+            transform: scale(1.1);
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+        }
+        .card-btn {
+            width: 100px;
+            height: 140px;
+            font-size: 40px;
+            font-family: 'Bungee Shade', cursive;
+            border-radius: 10px;
+            background-color: #fff;
+            color: black;
+            border: 3px solid #ccc;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.5);
+        }
+
+    </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary rounded bg-dark" aria-label="Thirteenth navbar example">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
+                    <a class="navbar-brand col-lg-3 me-0" href="#">Guess Game</a>
+                    <ul class="navbar-nav col-lg-6 justify-content-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- <a class="nav-link " href="#">Login</a> -->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"> <b id="pontuacao">0</b> Points</a> 
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div id="gameStartCard" class="card fade show">
+                <div class="card-header bg-dark text-white text-center">
+                    <h1>Opa! Que tal jogarmos um jogo?</h1>
+                </div>
+                <div class="card-body bg-dark text-white text-center">
+                    <p>🎲 Bem-vindo ao desafio! Seu objetivo é simples: <br>
+                       Escolha uma das três cartas e tente adivinhar o número correto!  
+                       Mas atenção, há algumas regras a seguir:
+                    </p>
+                    <ul class="text-start d-inline-block">
+                        <li>🔥 Você tem <strong>3 tentativas</strong> para acertar.</li>
+                        <li>✨ Cada acerto vale <strong>100 pontos</strong>.</li>
+                        <li>❌ Cada erro reduz <strong>50 pontos</strong>.</li>
+                        <li>⏳ Um cronômetro registrará o seu tempo!</li>
+                        <li>🏆 O objetivo? Acertar no menor tempo e com a maior pontuação possível!</li>
+                    </ul>
+                
+                    <p>🎯 Está pronto para testar sua sorte?</p>
+                
+                    <button id="start" class="btn btn-outline-light mt-2" type="button">
+                        Iniciar Jogo
+                    </button>
+                    
+                    <button id="nopStart" class="btn btn-outline-light mt-2" type="button">
+                        Não quero jogar
+                    </button>
+                </div>
+            </div>
+
+            <div id="gamePlayCard" class="card fade d-none bg-dark text-white text-center">
+                <div class="card-header bg-dark text-white text-center">
+                    <h1>Muito bem, agora escolha um numero!</h1>
+                </div>
+                <div class="card-body bg-dark text-white text-center">
+                    <div class="row justify-content-center gap-3 mt-3">
+                        <div class="col-3">
+                            <button class="btn btn-outline-dark card-btn" data-numero="1">
+                                1
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-outline-dark card-btn" data-numero="2">
+                                2
+                            </button>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-outline-dark card-btn" data-numero="3">
+                                3
+                            </button>
+                        </div>
+                    </div>
+                    <p id="resultado" class="mt-3 "></p>
+                </div>
+            </div>
+            
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+        <script>
+            document.getElementById("start").onclick = function () {
+                let startCard = document.getElementById("gameStartCard");
+                let playCard = document.getElementById("gamePlayCard")
+                startCard.classList.add("fade-out");
+                
+                setTimeout(() => {
+                    startCard.classList.add("d-none");
+                    startCard.classList.remove("fade-out");
+
+                    playCard.classList.remove("d-none");
+                    setTimeout(() => {
+                        playCard.classList.add("fade-in", "show");
+                        iniciarJogo();
+                    }, 10);
+                }, 1000);
+            };
+
+            function iniciarJogo() {
+                let numeroEscolhido = Math.floor(Math.random() * 3) + 1;
+                let resultadoText = document.getElementById("resultado");
+                let pontuacaoElement = document.getElementById("pontuacao");
+                let pontuacao = parseInt(pontuacaoElement.innerText) || 0; // Garante que começa com 0 se estiver vazio
+
+                console.log("Jogo iniciado! Número secreto:", numeroEscolhido);
+
+                document.querySelectorAll(".card-btn").forEach((botao) => {
+                    botao.onclick = function () {
+                        let numeroJogador = parseInt(botao.getAttribute("data-numero"));
+                        
+                        if (numeroJogador === numeroEscolhido) {
+                            resultadoText.innerHTML = "🎉 Parabéns! Você acertou!";
+                            resultadoText.style.color = "lightgreen";
+                            pontuacao += 100;
+                        } else {
+                            resultadoText.innerHTML = "❌ Você errou! Tente de novo.";
+                            resultadoText.style.color = "red";
+                            pontuacao -= 50;
+                        }
+
+                        // Atualizando a pontuação na tela
+                        pontuacaoElement.innerText = pontuacao;
+
+                        // Se quiser um novo número a cada tentativa, descomente a linha abaixo:
+                        numeroEscolhido = Math.floor(Math.random() * 3) + 1;
+                        console.log("Jogo iniciado! Número secreto:", numeroEscolhido);
+                    };
+                });
+            }
+        </script>
+    </body>
+</html>
