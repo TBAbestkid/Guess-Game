@@ -95,7 +95,7 @@
         <!-- Container Principal -->
         <div class="container d-flex justify-content-center align-items-center vh-100">
             <!-- Card inicial -->
-            <div id="gameStartCard" class="card fade show">
+            <div id="gameStartCard" class="card fade show ">
                 <div class="card-header bg-dark text-white text-center">
                     <h1>Opa! Que tal jogarmos um jogo?</h1>
                 </div>
@@ -126,9 +126,6 @@
 
             <!-- Card de recusar o jogo -->
             <div id="recusedGame" class="card fade d-none">
-                <div class="card-header bg-dark text-white text-center">
-                    <h2>Silêncio</h2>
-                </div>
                 <div class="card-body bg-dark text-white text-center">
                     <p>Você optando por não jogar</p>
                     <p>Mas eu te obrigando a jogar:</p>
@@ -175,12 +172,25 @@
                             </button>
                         </div>
                     </div>
-                    <div id="resultado" class="alert mt-3 ">
-
+                    <div class="alert mt-3">
+                        Você possui <b id="tentativas">3</b> tentativas.
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Card de GameOver -->
+            <div id="gameOverCard" class="card fade d-none bg-dark text-center text-white">
+                <div class="card-header bg-danger text-white">
+                    <h2>🎮 Fim de Jogo</h2>
+                </div>
+                <div class="card-body">
+                    <p id="finalMessage">
+                        O jogo acabou! Veja seu resultado:
+                    </p>
+                    <p><strong>Pontuação final:</strong> <span id="finalScore">0</span></p>
+                    <button id="restartGame" class="btn btn-outline-light mt-2">Jogar Novamente</button>
+                </div>
+            </div>
         </div>
 
         <!-- Toast -->
@@ -204,6 +214,22 @@
             // Inicia indo para seleção de tempo
             document.getElementById("start").onclick = function () {
                 let startCard = document.getElementById("gameStartCard");
+                let timeSelect = document.getElementById("timeSelectCard");
+                startCard.classList.add("fade-out");
+                
+                setTimeout(() => {
+                    startCard.classList.add("d-none");
+                    startCard.classList.remove("fade-out");
+
+                    timeSelect.classList.remove("d-none");
+                    setTimeout(() => {
+                        timeSelect.classList.add("fade-in", "show");
+                    }, 10);
+                }, 1000);
+            };
+              // Inicia indo para seleção de tempo
+              document.getElementById("restartGame").onclick = function () {
+                let startCard = document.getElementById("gameOverCard");
                 let timeSelect = document.getElementById("timeSelectCard");
                 startCard.classList.add("fade-out");
                 
@@ -270,15 +296,19 @@
                 }, 1000);
             };
 
+
             // Função para começar o jogo
             function iniciarJogo() {
+                let tentativasRestantes = 3;
+
                 let numeroEscolhido = Math.floor(Math.random() * 3) + 1;
                 let resultadoText = document.getElementById("resultado");
                 let pontuacaoElement = document.getElementById("pontuacao");
                 let cronometroElement = document.getElementById("cronometro");
+                let exibirTentativas = document.getElementById("tentativas");
 
                 let pontuacao = parseInt(pontuacaoElement.innerText) || 0; 
-                
+
                 console.log("Jogo iniciado! Número secreto:", numeroEscolhido);
                 clearInterval(intervaloTempo);
 
@@ -292,9 +322,9 @@
                     if (tempoRestante <= 0) {
                         clearInterval(intervaloTempo);
                         mostrarToast("⏳ Tempo esgotado! Fim de jogo!", "warning");
-                        document.querySelectorAll(".card-btn").forEach(botao => botao.disabled = true);
+                        finalizarJogo();
                     }
-                }, 1000);
+                }, 3000);
 
                 // Ao clicar num botão com a classe card-btn, começa
                 document.querySelectorAll(".card-btn").forEach((botao) => {
@@ -307,13 +337,22 @@
                         } else {
                             mostrarToast("❌ Você errou! Tente de novo.", "erro");
                             pontuacao -= 50;
+                            
+                            // reduzir as tentativas de jogador
+                            tentativasRestantes--;
                         }
 
                         // Atualizando a pontuação na tela
                         pontuacaoElement.innerText = pontuacao;
+                        exibirTentativas.innerHTML = tentativasRestantes;
 
-                        numeroEscolhido = Math.floor(Math.random() * 3) + 1;
-                        // console.log("Jogo iniciado! Número secreto:", numeroEscolhido);
+                        if(tentativasRestantes === 0){
+                            finalizarJogo();
+                            console.log("Finalizando jogo!")
+                        }else{
+                            numeroEscolhido = Math.floor(Math.random() * 3) + 1;
+                            // console.log("Jogo iniciado! Número secreto:", numeroEscolhido);
+                        }
                     };
                 });
             }
@@ -345,6 +384,46 @@
                 // Exibir o toast usando o Bootstrap
                 let toast = new bootstrap.Toast(toastElement);
                 toast.show();
+            }
+
+            function finalizarJogo(){
+                clearInterval(intervaloTempo);
+                console.log("Limpando tempo!");
+                // Escondendo o card de jogo
+                
+                let gamePlay = document.getElementById("gamePlayCard");
+                let gameOver = document.getElementById("gameOverCard");
+
+                gamePlay.classList.add("fade-out");
+                
+                setTimeout(() => {
+                    gamePlay.classList.add("d-none");
+                    gamePlay.classList.remove("fade-out");
+
+                    gameOver.classList.remove("d-none");
+                    setTimeout(() => {
+                        gameOver.classList.add("fade-in", "show");
+                    }, 10);
+                }, 1000);
+            
+                // Atualizando a pontuação final
+                document.getElementById("finalScore").innerText = document.getElementById("pontuacao").innerText;
+                setTimeout(() => {
+                    reiniciarJogo(); // Reinicia o jogo após 2 segundos
+                }, 2000);
+            }
+
+            function reiniciarJogo(){
+                tentativasRestantes = 3;
+                pontuacao = 0;
+                numeroEscolhido = Math.floor(Math.random() * 3) + 1;
+
+                document.getElementById("tentativas").innerText = tentativasRestantes; // Atualiza a exibição das tentativas
+                document.getElementById("pontuacao").innerText = pontuacao; // Atualiza a exibição da pontuação
+                document.querySelectorAll(".card-btn").forEach(botao => botao.disabled = false); // Reativa os botões
+                
+                console.log("Jogo reiniciado!");
+
             }
 
         </script>
